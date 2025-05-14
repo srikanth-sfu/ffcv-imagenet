@@ -20,4 +20,4 @@ tar -xf ILSVRC2012_img_val.tar
 # Move files into subdirectories by class using ground truth labels
 wget https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh
 bash valprep.sh
-cd $SLURM_TMPDIR/nanodet
+cd $SLURM_TMPDIR/ffcv-imagenet
