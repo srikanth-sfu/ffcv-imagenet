@@ -34,7 +34,7 @@ from ffcv.fields.basics import IntDecoder
 import torchmetrics
 
 Section('model', 'model details').params(
-    arch=Param(And(str, 'architecture', default='resnet18'),
+    arch=Param(str, 'architecture', default='resnet18'),
     pretrained=Param(int, 'is pretrained? (1/0)', default=0)
 )
 
