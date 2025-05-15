@@ -410,16 +410,16 @@ class ImageNetTrainer:
                     loss_val = self.loss(output, target)
                     self.val_meters['loss'](loss_val)
 
-        stats = {k: m.compute().item() for k, m in self.val_meters.items()}
+        stats = {k: m.().item() for k, m in self.val_meters.items()}
         [meter.reset() for meter in self.val_meters.values()]
         return stats
 
     @param('logging.folder')
     def initialize_logger(self, folder):
         self.val_meters = {
-            'top_1': torchmetrics.Accuracy(task='multiclass', num_classes=1000, compute_on_step=False).to(self.gpu),
-            'top_5': torchmetrics.Accuracy(task='multiclass', num_classes=1000, compute_on_step=False, top_k=5).to(self.gpu),
-            'loss': MeanScalarMetric(compute_on_step=False).to(self.gpu)
+            'top_1': torchmetrics.Accuracy(task='multiclass', num_classes=1000).to(self.gpu),
+            'top_5': torchmetrics.Accuracy(task='multiclass', num_classes=1000, top_k=5).to(self.gpu),
+            'loss': MeanScalarMetric().to(self.gpu)
         }
 
         if self.gpu == 0:
