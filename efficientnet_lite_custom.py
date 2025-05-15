@@ -29,7 +29,7 @@ class EfficientNetLiteCustom(nn.Module):
         # Stem
         #model = timm.create_model('test_efficientnet.r160_in1k', pretrained=pretrain)
         #model = timm.create_model('mobilevit_xxs.cvnets_in1k', pretrained=pretrain, features_only=True)
-        model = timm.create_model('test_efficientnet_gn.r160_in1k', pretrained=pretrai)
+        model = timm.create_model('test_efficientnet_gn.r160_in1k', pretrained=pretrain)
         self.model = model
         
     def forward(self, x):

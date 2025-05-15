@@ -237,6 +237,7 @@ class ImageNetTrainer:
         ]
 
         order = OrderOption.RANDOM if distributed else OrderOption.QUASI_RANDOM
+        print(num_workers)
         loader = Loader(train_dataset,
                         batch_size=batch_size,
                         num_workers=num_workers,
