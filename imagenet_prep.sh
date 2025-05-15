@@ -1,6 +1,6 @@
 cd $SLURM_TMPDIR
 mkdir data && cd data
-cp /project/def-mpderso/smuralid/ILSVRC2012_img_*.tar .
+cp /project/def-mpederso/smuralid/ILSVRC2012_img_*.tar .
 mkdir train && mv ILSVRC2012_img_train.tar train/
 cd train
 tar -xf ILSVRC2012_img_train.tar
