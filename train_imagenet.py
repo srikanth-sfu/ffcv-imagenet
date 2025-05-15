@@ -410,7 +410,7 @@ class ImageNetTrainer:
                     loss_val = self.loss(output, target)
                     self.val_meters['loss'](loss_val)
 
-        stats = {k: m.().item() for k, m in self.val_meters.items()}
+        stats = {k: m.compute().item() for k, m in self.val_meters.items()}
         [meter.reset() for meter in self.val_meters.values()]
         return stats
 
