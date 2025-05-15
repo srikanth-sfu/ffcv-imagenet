@@ -7,8 +7,7 @@ ch.backends.cudnn.benchmark = True
 ch.autograd.profiler.emit_nvtx(False)
 ch.autograd.profiler.profile(False)
 
-from torchvision import models
-import torchmetrics
+from efficientnet_lite_custom import EfficientNetLiteCustom 
 import numpy as np
 from tqdm import tqdm
 
@@ -32,9 +31,10 @@ from ffcv.transforms import ToTensor, ToDevice, Squeeze, NormalizeImage, \
 from ffcv.fields.rgb_image import CenterCropRGBImageDecoder, \
     RandomResizedCropRGBImageDecoder
 from ffcv.fields.basics import IntDecoder
+import torchmetrics
 
 Section('model', 'model details').params(
-    arch=Param(And(str, OneOf(models.__dir__())), default='resnet18'),
+    arch=Param(And(str, 'architecture', default='resnet18'),
     pretrained=Param(int, 'is pretrained? (1/0)', default=0)
 )
 
@@ -331,7 +331,7 @@ class ImageNetTrainer:
     @param('training.use_blurpool')
     def create_model_and_scaler(self, arch, pretrained, distributed, use_blurpool):
         scaler = GradScaler()
-        model = getattr(models, arch)(pretrained=pretrained)
+        model = EfficientNetLiteCustom(False) 
         def apply_blurpool(mod: ch.nn.Module):
             for (name, child) in mod.named_children():
                 if isinstance(child, ch.nn.Conv2d) and (np.max(child.stride) > 1 and child.in_channels >= 16): 
