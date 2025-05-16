@@ -307,10 +307,12 @@ class ImageNetTrainer:
                 }
 
                 self.eval_and_log(extra_dict)
+            
+            if self.gpu == 0:
+                epoch_fn = 'epoch_%d.pt'%(epoch+1)
+                ch.save(self.model.state_dict(), self.log_folder / epoch_fn)
 
             
-            print('Saving checkpoint.')
-            ch.save(self.model.state_dict(), self.log_folder / 'epoch_%d.pt'%(epoch))
         self.eval_and_log({'epoch':epoch})
         if self.gpu == 0:
             ch.save(self.model.state_dict(), self.log_folder / 'final_weights.pt')
