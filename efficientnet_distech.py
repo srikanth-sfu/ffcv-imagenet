@@ -37,22 +37,23 @@ class EfficientNetLiteCustom(nn.Module):
     
     def preprocess(self):
         model = self.model
-        model.conv_stem = torch.nn.Conv2d(1,12, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-        model.bn1 = BatchNormAct2d(12)
-        model.blocks[0][0].conv = torch.nn.Conv2d(12, 12, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False, groups=12)
-        model.blocks[0][0].bn1 = BatchNormAct2d(12)
+        f1, f2 = 20, 28
+        model.conv_stem = torch.nn.Conv2d(1,f1, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        model.bn1 = BatchNormAct2d(f1)
+        model.blocks[0][0].conv = torch.nn.Conv2d(f1, f1, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False, groups=f1)
+        model.blocks[0][0].bn1 = BatchNormAct2d(f1)
 
-        model.blocks[1][0].conv_exp = nn.Conv2d(12, 12, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, groups=12)
-        model.blocks[1][0].bn1 = BatchNormAct2d(12)
-        model.blocks[1][0].conv_pwl = nn.Conv2d(12, 20, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
-        model.blocks[1][0].bn2 = BatchNormAct2d(20)
+        model.blocks[1][0].conv_exp = nn.Conv2d(f1, f1, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, groups=f1)
+        model.blocks[1][0].bn1 = BatchNormAct2d(f1)
+        model.blocks[1][0].conv_pwl = nn.Conv2d(f1, f2, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        model.blocks[1][0].bn2 = BatchNormAct2d(f2)
 
-        model.blocks[2][0].conv_exp = nn.Conv2d(20, 20, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, groups=20)
-        model.blocks[2][0].bn1 = BatchNormAct2d(20)
-        model.blocks[2][0].conv_pwl = nn.Conv2d(20, 20, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False, groups=20)
-        model.blocks[2][0].bn2 = BatchNormAct2d(20)
+        model.blocks[2][0].conv_exp = nn.Conv2d(f2, f2, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False, groups=f2)
+        model.blocks[2][0].bn1 = BatchNormAct2d(f2)
+        model.blocks[2][0].conv_pwl = nn.Conv2d(f2, f2, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False, groups=f2)
+        model.blocks[2][0].bn2 = BatchNormAct2d(f2)
         
-        model.blocks[3][0].conv_pw = nn.Conv2d(20, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        model.blocks[3][0].conv_pw = nn.Conv2d(f2, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
         self.model = model
      
     def forward(self, x):
