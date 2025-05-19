@@ -54,6 +54,8 @@ class EfficientNetLiteCustom(nn.Module):
         model.blocks[2][0].bn2 = BatchNormAct2d(f2)
         
         model.blocks[3][0].conv_pw = nn.Conv2d(f2, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        preprocess(model)
+        print(model)
         self.model = model
      
     def forward(self, x):
