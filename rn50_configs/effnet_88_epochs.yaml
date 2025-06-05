@@ -2,29 +2,29 @@ data:
   in_memory: 1
   num_workers: 32
 dist:
-  world_size: 2
+  world_size: 4
 logging:
   folder: /tmp/
 lr:
-  lr: 0.5
+  lr: 0.05
   lr_schedule_type: cyclic
 model:
   arch: resnet50
 resolution:
-  end_ramp: 299
+  end_ramp: 87
   max_res: 192
-  min_res: 160
-  start_ramp: 298
+  min_res: 192
+  start_ramp: 86
 training:
-  batch_size: 192 
+  batch_size: 108 
   bn_wd: 0
   distributed: 1
-  epochs: 300 
+  epochs: 88 
   label_smoothing: 0.1
   momentum: 0.9
   optimizer: sgd
   weight_decay: 0.0001
-  use_blurpool: 1
+  use_blurpool: 0
 validation:
   lr_tta: true
   resolution: 256
