@@ -11,15 +11,15 @@ lr:
 model:
   arch: resnet50
 resolution:
-  end_ramp: 87
+  end_ramp: 299
   max_res: 192
   min_res: 192
-  start_ramp: 86
+  start_ramp: 288
 training:
   batch_size: 108 
   bn_wd: 0
   distributed: 1
-  epochs: 88 
+  epochs: 300 
   label_smoothing: 0.1
   momentum: 0.9
   optimizer: sgd
