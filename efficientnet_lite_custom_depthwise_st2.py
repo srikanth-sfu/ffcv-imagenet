@@ -59,5 +59,6 @@ class EfficientNetLiteCustom(nn.Module):
 
         
     def forward(self, x):
+        x = x[:, 0:1]
         output = self.model(x)
         return output
