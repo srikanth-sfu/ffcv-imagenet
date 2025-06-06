@@ -8,7 +8,7 @@ ch.autograd.profiler.emit_nvtx(False)
 ch.autograd.profiler.profile(False)
 
 from efficientnet_lite_custom import EfficientNetLiteCustom 
-from efficientnet_lite_custom_depthwise_st2 import EfficientNetLiteCustom
+from efficientnet_lite_custom_depthwise_st0 import EfficientNetLiteCustom
 #from efficientnet_distech import EfficientNetLiteCustom 
 
 import numpy as np
