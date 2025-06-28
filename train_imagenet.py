@@ -6,9 +6,9 @@ import torch.distributed as dist
 ch.backends.cudnn.benchmark = True
 ch.autograd.profiler.emit_nvtx(False)
 ch.autograd.profiler.profile(False)
+from torchinfo import summary
 
-from efficientnet_lite_custom import EfficientNetLiteCustom 
-from efficientnet_lite_custom_depthwise_st2 import EfficientNetLiteCustom
+from tiny_effnet import TinyEffnet
 #from efficientnet_distech import EfficientNetLiteCustom 
 
 import numpy as np
@@ -37,7 +37,7 @@ from ffcv.fields.basics import IntDecoder
 import torchmetrics
 
 Section('model', 'model details').params(
-    arch=Param(str, 'architecture', default='resnet18'),
+    phi=Param(int, 'architecture', default=0),
     pretrained=Param(int, 'is pretrained? (1/0)', default=0)
 )
 
@@ -334,13 +334,17 @@ class ImageNetTrainer:
 
         return stats
 
-    @param('model.arch')
+    @param('model.phi')
     @param('model.pretrained')
     @param('training.distributed')
     @param('training.use_blurpool')
-    def create_model_and_scaler(self, arch, pretrained, distributed, use_blurpool):
+    def create_model_and_scaler(self, phi, pretrained, distributed, use_blurpool):
         scaler = GradScaler()
-        model = EfficientNetLiteCustom(False) 
+		width_mult = alpha ** (-phi)
+		depth_mult = beta ** (-phi)
+        model = TinyEffnet(width_mult=width_mult, depth_mult=depth_mult)
+        print(summary(model, input_size=(1,3,224,224224)))
+
         def apply_blurpool(mod: ch.nn.Module):
             for (name, child) in mod.named_children():
                 if isinstance(child, ch.nn.Conv2d) and (np.max(child.stride) > 1 and child.in_channels >= 16): 
