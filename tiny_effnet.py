@@ -10,7 +10,6 @@ from functools import partial
 from timm.models._efficientnet_builder import decode_arch_def, round_channels
 import timm
 
-alpha, beta = 1.2, 1.1
 # EfficientNet Inverse Scaling Block
 class SimpleEffNetBlock(nn.Module):
     def __init__(self, in_ch, out_ch, stride=1):
@@ -25,21 +24,7 @@ class SimpleEffNetBlock(nn.Module):
         return self.block(x)
 
 def TinyEffNet(width_mult=1.0, depth_mult=1.0):
-    arch_def = [
-		['cn_r1_k3_s1_e1_c24_skip'],
-        ['er_r1_k3_s2_e4_c32'],
-        ['er_r1_k3_s2_e4_c40'],
-        ['ir_r1_k3_s2_e4_c64_se0.25'],
-        ['ir_r1_k3_s2_e4_c96_se0.25'], 
-    ]
-    round_chs_fn = partial(round_channels, multiplier=width_mult, round_limit=0.)
-    model_kwargs = dict(
-        block_args=decode_arch_def(arch_def, depth_mult),
-        num_features=round_chs_fn(384),
-        stem_size=24,
-        round_chs_fn=round_chs_fn,
-    )
-    model = _create_effnet('test_efficientnet', pretrained=False, **model_kwargs)
+    model = _gen_efficientnet('efficientnet_b0', channel_multiplier=width_mult, depth_multiplier=depth_mult)
     return model 
 
 # === FFCV ImageNet loader ===

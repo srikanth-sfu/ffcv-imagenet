@@ -37,7 +37,8 @@ from ffcv.fields.basics import IntDecoder
 import torchmetrics
 
 Section('model', 'model details').params(
-    phi=Param(int, 'architecture', default=0),
+    alpha=Param(float, 'architecture', default=1.2),
+    beta=Param(float, 'architecture', default=1.1),
     pretrained=Param(int, 'is pretrained? (1/0)', default=0)
 )
 
@@ -334,17 +335,27 @@ class ImageNetTrainer:
 
         return stats
 
-    @param('model.phi')
+    @param('model.alpha')
+    @param('model.beta')
     @param('model.pretrained')
     @param('training.distributed')
     @param('training.use_blurpool')
-    def create_model_and_scaler(self, phi, pretrained, distributed, use_blurpool):
+    def create_model_and_scaler(self, alpha, beta, pretrained, distributed, use_blurpool):
         scaler = GradScaler()
+        phi = 1
         width_mult = alpha ** (-phi)
         depth_mult = beta ** (-phi)
         model = TinyEffNet(width_mult=width_mult, depth_mult=depth_mult)
-        print(summary(model, input_size=(1,3,224,224)))
-
+        baseline_model = TinyEffNet(width_mult=1.0, depth_mult=1.0)
+        baseline_flops = 2*(summary(baseline_model, input_size=(1,3,224,224)).total_mult_adds)
+        info = summary(model, input_size=(1,3,224,224))
+        total_flops = 2 * info.total_mult_adds
+        multiplier = baseline_flops / total_flops
+        target_multiplier = 2
+        tolerance = 0.05
+        if abs(multiplier - target_multiplier) / target_multiplier > tolerance:
+            os._exit(1)
+        print('Satified threshold: ', alpha, beta)
         def apply_blurpool(mod: ch.nn.Module):
             for (name, child) in mod.named_children():
                 if isinstance(child, ch.nn.Conv2d) and (np.max(child.stride) > 1 and child.in_channels >= 16): 
