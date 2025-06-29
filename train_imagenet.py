@@ -6,14 +6,14 @@ import torch.distributed as dist
 ch.backends.cudnn.benchmark = True
 ch.autograd.profiler.emit_nvtx(False)
 ch.autograd.profiler.profile(False)
-from torchinfo import summary
 
-from tiny_effnet import TinyEffnet
+from tiny_effnet import TinyEffNet, alpha, beta
 #from efficientnet_distech import EfficientNetLiteCustom 
 
 import numpy as np
 from tqdm import tqdm
 
+from torchinfo import summary
 import os
 import time
 import json
@@ -340,10 +340,10 @@ class ImageNetTrainer:
     @param('training.use_blurpool')
     def create_model_and_scaler(self, phi, pretrained, distributed, use_blurpool):
         scaler = GradScaler()
-		width_mult = alpha ** (-phi)
-		depth_mult = beta ** (-phi)
-        model = TinyEffnet(width_mult=width_mult, depth_mult=depth_mult)
-        print(summary(model, input_size=(1,3,224,224224)))
+        width_mult = alpha ** (-phi)
+        depth_mult = beta ** (-phi)
+        model = TinyEffNet(width_mult=width_mult, depth_mult=depth_mult)
+        print(summary(model, input_size=(1,3,224,224)))
 
         def apply_blurpool(mod: ch.nn.Module):
             for (name, child) in mod.named_children():
