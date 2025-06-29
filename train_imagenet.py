@@ -7,7 +7,7 @@ ch.backends.cudnn.benchmark = True
 ch.autograd.profiler.emit_nvtx(False)
 ch.autograd.profiler.profile(False)
 
-from tiny_effnet import TinyEffNet, alpha, beta
+from tiny_effnet import TinyEffNet
 #from efficientnet_distech import EfficientNetLiteCustom 
 
 import numpy as np
