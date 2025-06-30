@@ -5,6 +5,10 @@ from torchvision.datasets import ImageNet
 from ffcv.loader import Loader, OrderOption
 from ffcv.transforms import ToDevice, ToTensor, ToTorchImage, RandomResizedCrop, RandomHorizontalFlip
 from ffcv.fields.decoders import IntDecoder, SimpleRGBImageDecoder
+from timm.models.efficientnet import _create_effnet, _gen_test_efficientnet, _gen_efficientnet 
+from functools import partial
+from timm.models._efficientnet_builder import decode_arch_def, round_channels
+import timm
 
 # EfficientNet Inverse Scaling Block
 class SimpleEffNetBlock(nn.Module):
@@ -19,32 +23,9 @@ class SimpleEffNetBlock(nn.Module):
     def forward(self, x):
         return self.block(x)
 
-class TinyEffNet(nn.Module):
-    def __init__(self, width_mult=1.0, depth_mult=1.0, num_classes=1000):
-        super().__init__()
-        base_channels = [32, 64, 128, 256]
-        base_repeats = [1, 2, 2, 3]
-
-        channels = [max(1, int(c * width_mult)) for c in base_channels]
-        repeats = [max(1, int(r * depth_mult)) for r in base_repeats]
-
-        layers = []
-        in_ch = 3
-        for out_ch, rep in zip(channels, repeats):
-            for i in range(rep):
-                stride = 2 if i == 0 else 1
-                layers.append(SimpleEffNetBlock(in_ch, out_ch, stride))
-                in_ch = out_ch
-
-        self.features = nn.Sequential(*layers)
-        self.pool = nn.AdaptiveAvgPool2d(1)
-        self.classifier = nn.Linear(channels[-1], num_classes)
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.pool(x).squeeze(-1).squeeze(-1)
-        x = self.classifier(x)
-        return x
+def TinyEffNet(width_mult=1.0, depth_mult=1.0):
+    model = _gen_efficientnet('efficientnet_b0', channel_multiplier=width_mult, depth_multiplier=depth_mult)
+    return model 
 
 # === FFCV ImageNet loader ===
 def build_ffcv_loader(ffcv_path, batch_size, num_workers=4, device='cuda'):

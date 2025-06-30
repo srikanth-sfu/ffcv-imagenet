@@ -1,0 +1,26 @@
+import os
+import glob, json
+
+def proc(folder):
+    if not os.path.isfile(folder+'/log'):
+        return 0,0,0
+    log = open(folder + '/log').read().split('\n')
+    params = json.load(open(folder + '/params.json'))
+    cur_a, cur_b = params['model.alpha'], params['model.beta']
+    if not log[-1]:
+        log = log[:-1]
+    acc_data = json.loads(log[-1])
+    acc = acc_data['top_1'] if acc_data['epoch'] == 14 else 0.0
+    return cur_a, cur_b, acc
+
+candidates = glob.glob('gridsearch_logs/*')
+alpha, beta, best = 1.2, 1.1, 0
+for c in candidates:
+    cur_a, cur_b, acc = proc(c)
+    print(cur_a, cur_b, acc)
+    if best < acc:
+        alpha, beta = cur_a, cur_b
+    best = max(acc, best)
+os._exit(1)
+for phi in range(7,0,-1):
+    os.system('bash train_imagenet.sh %.02f %0.2f %d'%(alpha, beta, phi))
