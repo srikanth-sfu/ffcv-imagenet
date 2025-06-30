@@ -17,10 +17,10 @@ resolution:
   min_res: 224
   start_ramp: 18
 training:
-  batch_size: 196 
+  batch_size: 512 
   bn_wd: 0
   distributed: 1
-  epochs: 20 
+  epochs: 15 
   label_smoothing: 0.1
   momentum: 0.9
   optimizer: sgd
