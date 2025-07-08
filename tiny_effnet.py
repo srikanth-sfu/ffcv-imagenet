@@ -23,8 +23,39 @@ class SimpleEffNetBlock(nn.Module):
     def forward(self, x):
         return self.block(x)
 
+def replace_layer(layer):
+    layer.out_channels = layer.in_channels = max(layer.in_channels, layer.out_channels)
+    layer.groups = layer.in_channels
+    old_conv = layer
+    layer = nn.Conv2d(
+        in_channels=old_conv.in_channels,
+        out_channels=old_conv.out_channels,
+        kernel_size=old_conv.kernel_size,
+        stride=old_conv.stride,
+        padding=old_conv.padding,
+        dilation=old_conv.dilation,
+        groups=layer.groups,  # <-- your intended group count
+        bias=(old_conv.bias is not None),
+        padding_mode=old_conv.padding_mode
+    )
+    return layer
+    
+
+def replace_block(model, blockid):
+    block = old_block = model.blocks[blockid]
+    for i in range(len(block)):
+        block[i].se.conv_reduce = replace_layer(block[i].se.conv_reduce)
+        block[i].se.conv_expand = replace_layer(block[i].se.conv_expand) 
+    return block
+
+def replace_blocks(model, start, end):
+    for block in range(start,end):
+        model.blocks[block] = replace_block(model, block)
+    return model 
 def TinyEffNet(width_mult=1.0, depth_mult=1.0):
-    model = _gen_efficientnet('efficientnet_b0', channel_multiplier=width_mult, depth_multiplier=depth_mult)
+    model = _gen_efficientnet('efficientnet_b0', channel_multiplier=width_mult, depth_multiplier=depth_mult, pretrained=False)
+    model = replace_blocks(model,1,4)
+    print(model)
     return model 
 
 # === FFCV ImageNet loader ===
