@@ -54,7 +54,7 @@ def replace_blocks(model, start, end):
     return model 
 def TinyEffNet(width_mult=1.0, depth_mult=1.0):
     model = _gen_efficientnet('efficientnet_b0', channel_multiplier=width_mult, depth_multiplier=depth_mult, pretrained=False)
-    model = replace_blocks(model,1,4)
+    model = replace_blocks(model,4,7)
     print(model)
     return model 
 
