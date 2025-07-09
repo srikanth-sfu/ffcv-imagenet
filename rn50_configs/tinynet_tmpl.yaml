@@ -2,7 +2,7 @@ data:
   in_memory: 1
   num_workers: 32
 dist:
-  world_size: 1 
+  world_size: 2 
 logging:
   folder: /tmp/
 lr:
@@ -18,7 +18,7 @@ resolution:
   min_res: 224
   start_ramp: 86 
 training:
-  batch_size: 392 
+  batch_size: 392
   bn_wd: 0
   distributed: 0
   epochs: 88 

@@ -35,6 +35,7 @@ from ffcv.fields.rgb_image import CenterCropRGBImageDecoder, \
     RandomResizedCropRGBImageDecoder
 from ffcv.fields.basics import IntDecoder
 import torchmetrics
+import ffcv
 
 Section('model', 'model details').params(
     phi=Param(int, 'architecture', default=0),
@@ -140,7 +141,6 @@ class ImageNetTrainer:
 
         if distributed:
             self.setup_distributed()
-
         self.train_loader = self.create_train_loader()
         self.val_loader = self.create_val_loader()
         self.model, self.scaler = self.create_model_and_scaler()
@@ -242,7 +242,6 @@ class ImageNetTrainer:
         ]
 
         order = OrderOption.RANDOM if distributed else OrderOption.QUASI_RANDOM
-        print(num_workers)
         loader = Loader(train_dataset,
                         batch_size=batch_size,
                         num_workers=num_workers,
@@ -284,7 +283,6 @@ class ImageNetTrainer:
             ToDevice(ch.device(this_device),
             non_blocking=True)
         ]
-
         loader = Loader(val_dataset,
                         batch_size=batch_size,
                         num_workers=num_workers,
@@ -294,7 +292,7 @@ class ImageNetTrainer:
                             'image': image_pipeline,
                             'label': label_pipeline
                         },
-                        distributed=distributed)
+                        distributed=0)
         return loader
 
     @param('training.epochs')
@@ -358,8 +356,7 @@ class ImageNetTrainer:
         model = model.to(memory_format=ch.channels_last)
         model = model.to(self.gpu)
 
-        if distributed:
-            model = ch.nn.parallel.DistributedDataParallel(model, device_ids=[self.gpu])
+        model = ch.nn.parallel.DataParallel(model, device_ids=[self.gpu])
 
         return model, scaler
 

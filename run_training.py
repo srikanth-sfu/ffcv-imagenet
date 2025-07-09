@@ -13,14 +13,6 @@ def proc(folder):
     acc = acc_data['top_1'] if acc_data['epoch'] == 14 else 0.0
     return cur_a, cur_b, acc
 
-candidates = glob.glob('gridsearch_logs/*')
-alpha, beta, best = 1.2, 1.1, 0
-for c in candidates:
-    cur_a, cur_b, acc = proc(c)
-    print(cur_a, cur_b, acc)
-    if best < acc:
-        alpha, beta = cur_a, cur_b
-    best = max(acc, best)
-os._exit(1)
-for phi in range(7,0,-1):
+alpha, beta = 1.46, 1.45
+for phi in range(3,8):
     os.system('bash train_imagenet.sh %.02f %0.2f %d'%(alpha, beta, phi))
